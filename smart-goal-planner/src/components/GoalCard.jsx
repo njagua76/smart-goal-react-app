@@ -1,22 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import DepositForm from "./DepositForm";
 
 function GoalCard({ goal, onUpdateGoal, onDeleteGoal }) {
-  const progress = Math.min((goal.savedAmount / goal.targetAmount) * 100, 100);
+  const [showDeposit, setShowDeposit] = useState(false);
 
   const handleDeposit = (amount) => {
     onUpdateGoal(goal.id, { savedAmount: goal.savedAmount + amount });
+    setShowDeposit(false);
   };
 
+  const progress = Math.min(
+    (goal.savedAmount / goal.targetAmount) * 100,
+    100
+  ).toFixed(1);
+
   return (
-    <div style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "15px" }}>
+    <div
+      style={{
+        border: "1px solid #ccc",
+        padding: "10px",
+        marginBottom: "10px",
+      }}
+    >
       <h3>{goal.name}</h3>
-      <p>Target: ${goal.targetAmount} | Saved: ${goal.savedAmount}</p>
+      <p>
+        Saved: ${goal.savedAmount} / ${goal.targetAmount} ({progress}%)
+      </p>
       <p>Category: {goal.category}</p>
       <p>Deadline: {goal.deadline}</p>
-      <progress value={progress} max="100" style={{ width: "100%" }}></progress>
-      <DepositForm onDeposit={handleDeposit} />
-      <button onClick={() => onDeleteGoal(goal.id)} style={{ marginTop: "10px", color: "red" }}>Delete Goal</button>
+      <button onClick={() => setShowDeposit(!showDeposit)}>
+        {showDeposit ? "Cancel" : "Deposit"}
+      </button>
+      <button
+        onClick={() => onDeleteGoal(goal.id)}
+        style={{ marginLeft: "10px", color: "red" }}
+      >
+        Delete
+      </button>
+
+      {showDeposit && <DepositForm onDeposit={handleDeposit} />}
     </div>
   );
 }
